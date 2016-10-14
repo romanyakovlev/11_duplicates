@@ -18,21 +18,18 @@ def list_of_repeated_files_fun(dir_name):
             path.append(file_path)
 
     list_with_all_files_with_path = list(zip(list_with_all_files,path))
-
+    repeat_count_list = Counter(tuple(list_with_all_files)).items()
+    dict_file_path = {}
     list_with_file_counts = []
 
-    repeat_count_list = Counter(tuple(list_with_all_files)).items()
-
-    dictir = {}
-
     for x in repeat_count_list:
-        dictir[x[0]]=[y[-1] for y in list_with_all_files_with_path if x[0]==y[0]]
+        dict_file_path[x[0]]=[y[-1] for y in list_with_all_files_with_path if x[0]==y[0]]
 
     for file_name in repeat_count_list:
         if file_name[1] > 1:
             list_with_file_counts.append(file_name)
 
-    return list_with_file_counts, dictir
+    return list_with_file_counts, dict_file_path
 
 if __name__ == '__main__':
 
