@@ -19,6 +19,7 @@ def list_of_repeated_files_fun(dir_name):
 
     files_list_with_file_path = list(zip(files_list,list_files_path))
     repeat_files_list = Counter(tuple(files_list)).items()
+    
     dict_for_paths = {}
 
     for repeat_file_params, repeat_count in repeat_files_list:
