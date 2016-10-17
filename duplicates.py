@@ -4,34 +4,27 @@ from collections import Counter
 import os
 import argparse
 
-def list_of_repeated_files_fun(dir_name):
+def list_of_repeated_files(dir_name):
 
     files_list = []
-    files_list_with_file_path = []
-    list_files_path = []
+    repeated_files_with_paths = {}
 
     for root_dir, folder_names, file_names in os.walk(dir_name):
         for file_name in file_names:
             file_path = '/'.join([root_dir,file_name])
             file_size = os.path.getsize(file_path)
-            files_list.append((file_name, file_size))
-            list_files_path.append(file_path)
+            files_list.append(tuple([file_name, file_size, file_path]))
 
-    files_list_with_file_path = list(zip(files_list,list_files_path))
-    repeat_files_list = Counter(tuple(files_list)).items()
-    
-    dict_for_paths = {}
+    files_counter = Counter([(file_name, file_size) for file_name, file_size, file_path in files_list]).items()
 
-    for repeat_file_params, repeat_count in repeat_files_list:
-        dict_for_paths[repeat_file_params] = [file_path for file_params, file_path \
-        in files_list_with_file_path if repeat_file_params == file_params]
+    repeated_files_list = [file_params for file_params, repeat_counter in files_counter if repeat_counter >1]
 
-    count_limit = 1
+    for repeated_file in repeated_files_list:
+        repeated_files_with_paths[repeated_file] = [file_path for file_name, file_size, file_path
+        in files_list if (file_name, file_size) == repeated_file]
 
-    filter_repeat_files_list = [(repeat_file_params, repeat_count)  \
-    for repeat_file_params, repeat_count in repeat_files_list if repeat_count > count_limit]
+    return repeated_files_with_paths.items()
 
-    return filter_repeat_files_list, dict_for_paths
 
 if __name__ == '__main__':
 
@@ -41,13 +34,13 @@ if __name__ == '__main__':
 
     print('\nФайлы, повторяющиеся больше одного раза:\n')
 
-    filter_repeat_files_list, dict_for_paths = list_of_repeated_files_fun(dir_name)
+    repeated_files_list = list_of_repeated_files(dir_name)
 
-    if not filter_repeat_files_list:
-        print('Ни один файл не повторяется')
-    else:
-        for repeated_file, repeat_count in filter_repeat_files_list:
-            print('Файл "{}" повторяется {} раз(а):\n'.format(repeated_file[0], repeat_count))
-            for file_path in dict_for_paths[repeated_file]:
-                print(file_path)
-            print('\n')
+    if not len(repeated_files_list):
+        print('Не повторяется ни одного файла\n')
+        
+    for (file_name, file_size), file_paths in repeated_files_list:
+        print('Файл "{}" повторяется {} раз(а) и находится в следующих папках:\n'.format(file_name, len(file_paths)))
+        for file_path in file_paths:
+            print(file_path)
+        print('\n')
